@@ -1,5 +1,5 @@
-import { configureAxios } from "./api/axios";
-import getRating from "./api/getRating";
+import { configureAxios } from './api/axios';
+import getRating from './api/getRating';
 
 const setup = async () => {
   await configureAxios();
@@ -9,7 +9,7 @@ const setup = async () => {
     sender,
     sendResponse
   ) {
-    if (request.type === "getRating") {
+    if (request.type === 'getRating') {
       getRating(request.query)
         .then((response) => sendResponse([response, null]))
         .catch((error) => {

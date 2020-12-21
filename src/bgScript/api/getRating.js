@@ -1,25 +1,25 @@
-import cheerio from "cheerio";
-import { axios } from "./axios";
+import cheerio from 'cheerio';
+import { axios } from './axios';
 
 const extractRating = (html, query) => {
   const $ = cheerio.load(html);
 
   let wines = [];
-  $(".card").each((index, el) => {
+  $('.card').each((index, el) => {
     const name = $(el)
-      .find(".wine-card__name .link-color-alt-grey")
+      .find('.wine-card__name .link-color-alt-grey')
       .text()
       .trim();
     const score = $(el)
-      .find(".average__number")
+      .find('.average__number')
       .text()
       .trim()
-      .replace(",", ".");
+      .replace(',', '.');
     const numOfReviews = $(el)
-      .find(".average__stars .text-micro")
+      .find('.average__stars .text-micro')
       .text()
       .trim();
-    const href = $(el).find("a").attr("href");
+    const href = $(el).find('a').attr('href');
     const url = `https://www.vivino.com` + href;
 
     if (!numOfReviews) {
@@ -38,6 +38,7 @@ const extractRating = (html, query) => {
 };
 
 export default async function getRating(query) {
+  console.log('Hitting', `/search/wines?q=${encodeURIComponent(query)}`);
   const response = await axios.get(
     `/search/wines?q=${encodeURIComponent(query)}`
   );

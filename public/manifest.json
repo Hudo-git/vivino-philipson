@@ -1,13 +1,14 @@
 {
-  "name": "Vivino rating for Systembolaget",
+  "name": "Vivino rating for Kensington Wine Market",
   "version": "1.0",
-  "description": "Show wine rating on systembolaget website",
+  "description": "Show wine rating on Kensington Wine Market website",
   "manifest_version": 2,
   "permissions": ["*://www.vivino.com/*", "unlimitedStorage", "activeTab"],
   "content_scripts": [
     {
-      "matches": ["https://www.systembolaget.se/*"],
-      "js": ["contentScript.js"]
+      "matches": ["https://www.kensingtonwinemarket.com/*"],
+      "js": ["contentScript.js"],
+      "run_at": "document_start"
     }
   ],
   "background": {

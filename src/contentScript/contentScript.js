@@ -1,11 +1,11 @@
-import debounce from "lodash/debounce";
-import get from "lodash/get";
-import getRating from "./api/getRating";
+import debounce from 'lodash/debounce';
+import get from 'lodash/get';
+import getRating from './api/getRating';
 
 function initializeScript() {
-  const shouldInititialize =
-    window.location.search.includes("categoryLevel1=Vin") ||
-    window.location.href.includes("/sok/");
+  const shouldInititialize = window.location.pathname.includes(
+    '/products/wine'
+  );
 
   if (!shouldInititialize) {
     return;
@@ -14,12 +14,12 @@ function initializeScript() {
   appendRatings();
 
   // can't use MutationObserver unfortunately :(
-  window.addEventListener("scroll", debounce(appendRatings, 1000));
+  window.addEventListener('scroll', debounce(appendRatings, 1000));
 }
 
 function appendRatings() {
   const wineListItems = document.querySelectorAll(
-    'a[href*="/vin"]:not(.navbar-level-1-link)'
+    'div.prodDesc > a.tastersnote'
   );
 
   wineListItems.forEach((item) => {
@@ -30,22 +30,29 @@ function appendRatings() {
 }
 
 async function appendRating(element) {
-  element.parentElement.style.position = "relative";
-  const wineName = get(element.querySelector("h3"), "innerText");
+  element.parentElement.style.position = 'relative';
+  const wineName = get(element.querySelector('span'), 'innerText');
 
   if (!wineName) {
     return;
   }
 
   try {
+    const loadingElement = document.createElement('span');
+    loadingElement.innerText = 'Loading score...';
+    loadingElement.style.position = 'absolute';
+    loadingElement.style.bottom = '20px';
+    loadingElement.style.right = '130px';
+    element.parentElement.appendChild(loadingElement);
     const { score, numOfReviews, url } = await getRating(wineName);
+    loadingElement.remove();
 
-    const priceElement = document.createElement("a");
+    const priceElement = document.createElement('a');
     priceElement.href = url;
     priceElement.innerText = `Score: ${score} (${numOfReviews} reviews)`;
-    priceElement.style.position = "absolute";
-    priceElement.style.bottom = "20px";
-    priceElement.style.right = "130px";
+    priceElement.style.position = 'absolute';
+    priceElement.style.bottom = '20px';
+    priceElement.style.right = '130px';
 
     element.parentElement.appendChild(priceElement);
   } catch (e) {
@@ -53,4 +60,4 @@ async function appendRating(element) {
   }
 }
 
-window.addEventListener("load", initializeScript);
+document.addEventListener('DOMContentLoaded', initializeScript);
