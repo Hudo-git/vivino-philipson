@@ -2,49 +2,52 @@ import debounce from 'lodash/debounce';
 import get from 'lodash/get';
 import getRating from './api/getRating';
 
-function initializeScript() {
-  const shouldInititialize = window.location.pathname.includes(
-    '/products/wine'
-  );
 
-  if (!shouldInititialize) {
-    return;
-  }
 
-  appendRatings();
-
-  // can't use MutationObserver unfortunately :(
-  window.addEventListener('scroll', debounce(appendRatings, 1000));
+function Initialize() {
+   
+   main_func();
+   
+   window.addEventListener('scroll', debounce(main_func, 1000),{passive: true});
 }
 
-function appendRatings() {
-  const wineListItems = document.querySelectorAll(
-    'div.prodDesc > a.tastersnote'
-  );
+function main_func() {
+   
 
+ //if (document.querySelectorAll("span.mix-name").length > 0) {
+
+  const wineListItems = document.querySelectorAll(
+    "h6");
+    
   wineListItems.forEach((item) => {
+    //const isInView = checkVisible(item.parentNode, 100);
     const isInView = checkVisible(item.parentNode, 100);
-    console.log(item.parentNode, isInView);
+    //console.log(item.parentNode, isInView);
     if (!item.parentNode.style.position && isInView) {
       appendRating(item);
     }
-  });
+  });  
+
+  
 }
+
 
 async function appendRating(element) {
   element.parentElement.style.position = 'relative';
-  const wineName = get(element.querySelector('span'), 'innerText');
+  const wineName = element.innerText; 
 
   if (!wineName) {
     return;
   }
 
+   let loadingElement;
   try {
-    const loadingElement = document.createElement('span');
+    //const loadingElement = document.createElement('span');
+    loadingElement = document.createElement('span');
     loadingElement.innerText = 'Loading score...';
-    loadingElement.style.position = 'absolute';
-    loadingElement.style.bottom = '20px';
-    loadingElement.style.right = '130px';
+    loadingElement.style.position = 'relative';
+    loadingElement.style.bottom = "5px";
+    loadingElement.style.right = "auto";
     element.parentElement.appendChild(loadingElement);
     const { score, numOfReviews, url } = await getRating(wineName);
     loadingElement.remove();
@@ -52,12 +55,16 @@ async function appendRating(element) {
     const priceElement = document.createElement('a');
     priceElement.href = url;
     priceElement.innerText = `Score: ${score} (${numOfReviews} reviews)`;
-    priceElement.style.position = 'absolute';
-    priceElement.style.bottom = '20px';
-    priceElement.style.right = '130px';
+    priceElement.style.position = 'relative';
+    priceElement.style.bottom = "15px";
+    priceElement.style.right = "auto";
 
     element.parentElement.appendChild(priceElement);
   } catch (e) {
+   //console.log(e)
+
+    loadingElement.innerText = 'Not found!';
+    //loadingElement.remove();
     console.error(`${wineName} is not found on Vivino`);
   }
 }
@@ -77,4 +84,6 @@ function checkVisible(elm, threshold, mode) {
   return mode === 'above' ? above : mode === 'below' ? below : !above && !below;
 }
 
-document.addEventListener('DOMContentLoaded', initializeScript);
+//document.addEventListener('DOMContentLoaded', initializeScript);
+
+document.addEventListener('DOMContentLoaded', Initialize);
